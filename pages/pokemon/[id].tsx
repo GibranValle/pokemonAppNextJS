@@ -23,12 +23,20 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
 export const getStaticPaths: GetStaticPaths = async () => {
     // paths: { params: {id: '1'}}
     const paths = [...Array(151)].map((value, idx) => ({ params: { id: `${idx + 1}` } }))
-    return { paths, fallback: false }
+    return { paths, fallback: "blocking" }
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const { id } = params as { id: string }
     const pokemon = await getPokemonInfo(id)
+    if (!pokemon) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            }
+        }
+    }
     return { props: { pokemon } }
 }
 

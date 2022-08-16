@@ -23,12 +23,20 @@ export const getStaticPaths: GetStaticPaths = async (ctx) => {
     const response = await pokeApi.get<PokemonList>('/pokemon?limit=151')
     const { results } = response.data
     const paths = results.map(({ name }: { name: string }) => ({ params: { name } }))
-    return { paths, fallback: false }
+    return { paths, fallback: "blocking" }
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
     const { name } = params as { name: string }
     const pokemon = await getPokemonInfo(name)
+    if (!pokemon) {
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            }
+        }
+    }
     return { props: { pokemon } }
 }
 
